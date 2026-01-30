@@ -1,0 +1,17 @@
+{
+  "token": "YOUR_DISCORD_BOT_TOKEN",
+  "channelId": "YOUR_CHANNEL_ID",
+  "targetUrl": "https://www.ap-siken.com/apkakomon.php",
+  "baseUrl": "https://www.ap-siken.com/",
+  "questionSelector": "h3.qno + div",
+  "choiceSelector": "ul.selectList li",
+  "choiceLabelSelector": "button.selectBtn",
+  "choiceTextSelector": "span",
+  "cron": "0 5 * * *",
+  "timezone": "Asia/Tokyo",
+  "pollDurationHours": 24,
+  "pollAllowMultiselect": false,
+  "apkakomon": {
+    "enabled": true
+  }
+}
