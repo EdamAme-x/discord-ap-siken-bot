@@ -2,6 +2,7 @@
   "token": "YOUR_DISCORD_BOT_TOKEN",
   "channelId": "YOUR_CHANNEL_ID",
   "targetUrl": "https://www.ap-siken.com/apkakomon.php",
+  "proxy": null,
   "baseUrl": "https://www.ap-siken.com/",
   "questionSelector": "h3.qno + div",
   "choiceSelector": "ul.selectList li",

@@ -18,6 +18,7 @@ export type RequestOptions = {
 
 export type ScrapeOptions = ParseOptions & {
   targetUrl: string;
+  proxy?: string | null;
   request?: RequestOptions;
   apkakomon?: ApkakomonConfig;
 };

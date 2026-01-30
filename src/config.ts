@@ -7,6 +7,7 @@ type Config = {
   token: string;
   channelId: string;
   targetUrl: string;
+  proxy?: string | null;
   questionSelector?: string;
   choiceSelector?: string;
   choiceLabelSelector?: string;

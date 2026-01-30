@@ -1,8 +1,10 @@
 import type { ScrapeOptions } from './scraper.js';
 import { buildApkakomonRequest } from './apkakomon.js';
 
-function buildRequestInit(options: ScrapeOptions): RequestInit | undefined {
-  let init: RequestInit | undefined;
+type FetchOptions = RequestInit & { dispatcher?: unknown };
+
+function buildRequestInit(options: ScrapeOptions): FetchOptions | undefined {
+  let init: FetchOptions | undefined;
 
   if (options.apkakomon?.enabled) {
     const apkRequest = buildApkakomonRequest(options.apkakomon);
@@ -29,6 +31,16 @@ function buildRequestInit(options: ScrapeOptions): RequestInit | undefined {
   return init;
 }
 
+async function getFetchWithProxy(proxy: string | null | undefined): Promise<typeof fetch> {
+  if (!proxy || proxy === '') {
+    return fetch;
+  }
+  const { fetch: undiciFetch, ProxyAgent } = await import('undici');
+  const agent = new ProxyAgent(proxy);
+  return (url: string | URL | Request, init?: RequestInit) =>
+    undiciFetch(url, { ...init, dispatcher: agent } as Parameters<typeof undiciFetch>[1]);
+}
+
 function getCookieHeader(response: Response): string | undefined {
   const headers = response.headers as Headers & { getSetCookie?: () => string[] };
   const cookies = headers.getSetCookie?.();
@@ -39,8 +51,9 @@ function getCookieHeader(response: Response): string | undefined {
 }
 
 export async function fetchHtml(options: ScrapeOptions): Promise<string> {
+  const doFetch = await getFetchWithProxy(options.proxy);
   const init = buildRequestInit(options);
-  const response = await fetch(options.targetUrl, init);
+  const response = await doFetch(options.targetUrl, init);
 
   const isRedirect = response.status >= 300 && response.status < 400;
   const location = response.headers.get('location');
@@ -56,7 +69,7 @@ export async function fetchHtml(options: ScrapeOptions): Promise<string> {
       },
       redirect: 'follow'
     };
-    const redirectResponse = await fetch(redirectUrl, redirectInit);
+    const redirectResponse = await doFetch(redirectUrl, redirectInit);
     if (!redirectResponse.ok) {
       throw new Error(`Failed to fetch redirect ${redirectUrl}: ${redirectResponse.status}`);
     }
