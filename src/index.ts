@@ -153,6 +153,29 @@ async function main() {
 
   scheduleDaily(cron, config.cron, config.timezone, job);
   console.log(`Scheduled job: ${config.cron} (${config.timezone})`);
+  console.log('[startup] Bot is running. Press Ctrl+C to stop.');
+
+  // Keep process alive and handle graceful shutdown
+  const shutdown = async () => {
+    console.log('\n[shutdown] Shutting down gracefully...');
+    await sender.stop();
+    process.exit(0);
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+
+  // Keep process alive (prevent immediate exit)
+  // Discord client connection should keep the process alive, but ensure it doesn't exit
+  if (process.stdin.isTTY) {
+    process.stdin.resume();
+  }
+  
+  // Keep event loop alive with a no-op interval (as fallback)
+  // This ensures the process doesn't exit even if Discord client disconnects
+  setInterval(() => {
+    // No-op: just keep the event loop alive
+  }, 60000); // Check every minute
 }
 
 main().catch((error) => {
