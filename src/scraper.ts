@@ -74,10 +74,24 @@ export function parseQuestionFromHtml(html: string, options: ParseOptions): Ques
       return { label, text, images };
     });
 
+  // Extract answer (e.g., "ウ" from span#answerChar)
+  const answerElement = $('#answerChar').first();
+  const answer = answerElement.length > 0 ? extractText($, answerElement) : undefined;
+
+  // Extract explanation from div#kaisetsu
+  const explanationElement = $('#kaisetsu .ansbg').first();
+  const explanation = explanationElement.length > 0 ? extractText($, explanationElement) : undefined;
+  const explanationImages = explanationElement.length > 0
+    ? extractImages($, explanationElement).map((src) => resolveUrl(src, baseUrl))
+    : [];
+
   return {
     questionText,
     questionImages,
-    choices
+    choices,
+    answer,
+    explanation,
+    explanationImages
   };
 }
 

@@ -85,4 +85,38 @@ describe('runOnce', () => {
     expect(sender.sendQuestion).toHaveBeenCalledTimes(2);
     expect(sender.sendPoll).toHaveBeenCalledTimes(1);
   });
+
+  it('does not send poll when poll has zero answers', async () => {
+    const config = {
+      pollDurationHours: 12,
+      pollAllowMultiselect: false
+    };
+
+    const question = {
+      questionText: 'Question text',
+      questionImages: [],
+      choices: []
+    };
+
+    const scrapePastExams = vi.fn().mockResolvedValue(question);
+    const buildQuestionMessage = vi.fn().mockReturnValue({
+      content: 'message-body',
+      imageUrls: []
+    });
+    const buildPollData = vi.fn().mockReturnValue({
+      question: { text: 'Question text' },
+      answers: [],
+      duration: 12,
+      allowMultiselect: false
+    });
+    const sender = {
+      sendQuestion: vi.fn().mockResolvedValue(undefined),
+      sendPoll: vi.fn().mockResolvedValue(undefined)
+    };
+
+    await runOnce(config, { scrapePastExams, buildQuestionMessage, buildPollData, sender });
+
+    expect(sender.sendQuestion).toHaveBeenCalled();
+    expect(sender.sendPoll).not.toHaveBeenCalled();
+  });
 });

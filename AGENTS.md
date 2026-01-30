@@ -7,6 +7,7 @@ Type errors: If you cannot resolve a type error, ask.
 Sandbox rule: If you need to see actual results (API responses, etc.), place the script under `sandbox/*` and run it there.
 After each task: Always run tests and type checking.
 Example of Config is `./config.example.json`
+Dont't write comment in Code.
 
 Light Discord.js docs:
 ```md
