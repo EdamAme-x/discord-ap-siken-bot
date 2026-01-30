@@ -76,19 +76,14 @@ export function buildButtonComponents(question: QuestionData): ActionRowBuilder<
     
     for (let j = 0; j < chunk.length; j += 1) {
       const choice = chunk[j];
-      const label = choice.label;
-      const text = choice.text;
+      const label = choice.label; // ア, イ, ウ, エ など
       const choiceIndex = i + j;
-      
-      // Discord button label max 80 chars, customId max 100 chars
-      // Use label only if full text is too long
-      const buttonLabel = `${label}. ${text}`.length <= 80 ? `${label}. ${text}` : label;
       const customId = `choice_${choiceIndex}`;
       
       row.addComponents(
         new ButtonBuilder()
           .setCustomId(customId)
-          .setLabel(buttonLabel)
+          .setLabel(label)
           .setStyle(ButtonStyle.Primary)
       );
     }

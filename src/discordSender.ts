@@ -173,19 +173,25 @@ export function createDiscordSender({
       throw new ImageDownloadError(failed);
     }
 
-    // Send images first if any
-    if (attachments.length > 0) {
+    // Send one message: question text (top), then images (middle), then buttons (bottom)
+    const filesForFirstMessage =
+      attachments.length > 0
+        ? chunkArray(attachments, MAX_FILES_PER_MESSAGE)[0]
+        : undefined;
+    const sent = await channel.send({
+      content: message.content,
+      files: filesForFirstMessage,
+      components: components.length > 0 ? components : undefined
+    });
+
+    // If there are more image batches, send them after the main message
+    if (attachments.length > MAX_FILES_PER_MESSAGE) {
       const batches = chunkArray(attachments, MAX_FILES_PER_MESSAGE);
-      for (let batchIndex = 0; batchIndex < batches.length; batchIndex += 1) {
+      for (let batchIndex = 1; batchIndex < batches.length; batchIndex += 1) {
         await channel.send({ files: batches[batchIndex] });
       }
     }
 
-    // Send question text with buttons
-    const sent = await channel.send({
-      content: message.content,
-      components: components.length > 0 ? components : undefined
-    });
     return sent.id;
   }
 

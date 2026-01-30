@@ -48,8 +48,18 @@ function extractText(root: ReturnType<typeof load>, element: any): string {
     const supText = root(sup).text();
     root(sup).replaceWith(`^${supText}`);
   });
-
-  return clone.text().replace(/\s+/g, ' ').trim();
+  // Preserve line breaks: <br> -> newline
+  clone.find('br').each((_i: number, el: any) => {
+    root(el).replaceWith('\n');
+  });
+  const text = clone.text();
+  // Collapse spaces/tabs but preserve newlines
+  return text
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n +/g, '\n')
+    .replace(/ +\n/g, '\n')
+    .replace(/\n\s*\n/g, '\n\n')
+    .trim();
 }
 
 export function parseQuestionFromHtml(html: string, options: ParseOptions): QuestionData {
