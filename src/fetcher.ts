@@ -37,8 +37,12 @@ async function getFetchWithProxy(proxy: string | null | undefined): Promise<type
   }
   const { fetch: undiciFetch, ProxyAgent } = await import('undici');
   const agent = new ProxyAgent(proxy);
-  return (url: string | URL | Request, init?: RequestInit) =>
-    undiciFetch(url, { ...init, dispatcher: agent } as Parameters<typeof undiciFetch>[1]);
+  const proxiedFetch = ((url: RequestInfo | URL, init?: RequestInit) =>
+    undiciFetch(url as unknown as Parameters<typeof undiciFetch>[0], {
+      ...(init ?? {}),
+      dispatcher: agent
+    } as Parameters<typeof undiciFetch>[1])) as unknown as typeof fetch;
+  return proxiedFetch;
 }
 
 function getCookieHeader(response: Response): string | undefined {

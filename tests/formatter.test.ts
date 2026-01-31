@@ -14,11 +14,23 @@ describe('buildQuestionMessage', () => {
 
     const message = buildQuestionMessage(question);
 
-    expect(message.content).toBe('What is 2 + 2?');
+    expect(message.content).toBe('What is 2 + 2?\n\nA. 3\nB. 4');
     expect(message.imageUrls).toEqual([
       'https://example.com/q.png',
       'https://example.com/b.png'
     ]);
+  });
+
+  it('keeps only the question text when there are no choices', () => {
+    const question = {
+      questionText: 'Solo question',
+      questionImages: [],
+      choices: []
+    };
+
+    const message = buildQuestionMessage(question);
+
+    expect(message.content).toBe('Solo question');
   });
 });
 

@@ -29,12 +29,17 @@ type FormatterConfig = {
 
 export function buildQuestionMessage(question: QuestionData): QuestionMessage {
   const questionText = question.questionText?.trim() || 'Question';
+  const choicesText = question.choices
+    .map((choice) => `${choice.label}. ${choice.text}`.trim())
+    .filter((line) => line !== '.')
+    .join('\n');
+  const content = choicesText ? `${questionText}\n\n${choicesText}` : questionText;
   const imageUrls = [
     ...question.questionImages,
     ...question.choices.flatMap((choice) => choice.images)
   ];
 
-  return { content: questionText, imageUrls };
+  return { content, imageUrls };
 }
 
 export function buildPollData(question: QuestionData, config: FormatterConfig): PollData {

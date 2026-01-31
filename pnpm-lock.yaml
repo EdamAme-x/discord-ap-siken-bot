@@ -20,6 +20,9 @@ importers:
       sharp:
         specifier: ^0.33.0
         version: 0.33.5
+      undici:
+        specifier: ^6.0.0
+        version: 6.21.3
     devDependencies:
       '@types/node':
         specifier: 25.1.0
